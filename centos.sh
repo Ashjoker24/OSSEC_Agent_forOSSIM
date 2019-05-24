@@ -1,6 +1,6 @@
 #!/bin/bash
 sudo yum install wget gcc  -y
-if [ -e /tmp/3.1.0 ]
+if [ -f /tmp/3.1.0 ]
 then
 echo "already available"
 else
