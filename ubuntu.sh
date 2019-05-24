@@ -1,6 +1,6 @@
 #!/bin/bash
 sudo apt-get install wget gcc  -y
-if [ -e /tmp/ossec-hids-3.1.0 ]
+if [ -f /tmp/ossec-hids-3.1.0 ]
 then
 echo "already available"
 else
