@@ -1,0 +1,16 @@
+---
+- name: generate template which will add agent to ossec
+  sudo: yes
+  template:
+    src: 'add_agent'
+    dest: '/var/ossec/add_agent'
+- name: add agents from template to ossec server
+  sudo: yes
+  shell: >
+    /var/ossec/bin/manage_agents -f /var/ossec/add_agent
+- name: copy client key file to ansible controller
+  sudo: yes
+  fetch:
+    src: /var/ossec/etc/client.keys
+    dest: /tmp/client.keys
+    flat: yes

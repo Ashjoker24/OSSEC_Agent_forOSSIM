@@ -1,0 +1,53 @@
+---
+##- host: linux_nodes
+#  - name: download ossec_agent source code
+#    get_url:
+#      url: 'https://codeload.github.com/ossec/ossec-hids/tar.gz/3.3.0'
+#      dest: '/tmp'
+#  - name: Unarchive downloaded
+#    shell: >
+#      chdir='/tmp'
+#      tar xvf 3.3.0
+#      creates=/tmp/ossec-hids-3.3.0
+  
+  - name: Transfer the script
+    sudo: yes
+    copy: src=ubuntu.sh dest=/home mode=0777
+
+  - name: Execute the script
+    sudo: yes
+    command: sh /home/ubuntu.sh
+
+  - name: copy preloaded_vars.conf
+    template:
+     src: 'preloaded_vars.conf'
+     dest: '/tmp/ossec-hids-3.1.0/etc/preloaded-vars.conf'
+
+  - name: install.sh
+    shell: >
+     chdir='/tmp/ossec-hids-3.1.0'
+     bash ./install.sh
+     creates=/var/ossec/etc/ossec.conf
+    sudo: yes
+
+  - name: client_keys from ansible server to agent
+    copy:
+     src: '/tmp/client.keys'
+     dest: '/tmp/client.keys'
+#    register: keys
+  - shell: >
+       grep "{{ansible_hostname}}" /tmp/client.keys  > /var/ossec/etc/client.keys
+    sudo: yes
+#    when: keys.changed
+#    notify: restart ossec
+
+  - name: remove server keys
+    file:
+     path: '/tmp/client.keys'
+     state: 'absent'
+
+#  - name: start ossec
+#    service:
+#      name: 'ossec'
+#      state: 'started'
+#    sudo: yes 

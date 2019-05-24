@@ -1,0 +1,9 @@
+- include: agent.yml
+  when: ansible_hostname == "alienvault"
+- include: install_centos.yml
+  when: ansible_distribution == "CentOS"
+- include: install_ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
+- include: install_windows.yml
+  when: ansible_os_family == "Windows"
+ 

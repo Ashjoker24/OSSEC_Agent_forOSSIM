@@ -1,0 +1,31 @@
+---
+- name: install Chocolatey package
+  win_chocolatey:
+   name: chocolatey
+   state: latest
+ 
+- name: Install OSSEC Agent
+  win_chocolatey:
+    name: ossec-client 
+    state: latest
+
+- name: client_keys from ansible server to agent
+  win_copy:
+    src: /tmp/client.keys
+    dest: C:\Program Files (x86)\ossec-agent\tmp\client.keys
+  register: keys
+
+- shell: >
+    Get-Content 'C:\Program Files (x86)\ossec-agent\tmp\client.keys' | ? { $_ -match "{{ansible_hostname}}" } | | Set-Content C:\Program Files (x86)\ossec-agent\client.keys
+  when: keys.changed
+  notify: restart ossec
+
+- name: remove server keys
+  file:
+    path: 'C:\Program Files (x86)\ossec-agent\tmp\client.keys'
+    state: 'absent'
+
+- name: start ossec
+  service:
+    name: 'ossec'
+    state: 'started'
